@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "description": "Express.js backend for Food Redistribution Platform",
   "main": "dist/server.js",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "build": "tsc",
+    "build": "npm install && tsc",
     "start": "node dist/server.js",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.ts",
+    "postinstall": "tsc || true",
+    "clean": "rm -rf dist"
   },
   "keywords": ["food", "redistribution", "express", "mongodb"],
   "author": "",

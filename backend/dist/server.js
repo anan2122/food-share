@@ -24,10 +24,15 @@ const analytics_routes_1 = __importDefault(require("./routes/analytics.routes"))
 const impact_routes_1 = __importDefault(require("./routes/impact.routes"));
 const app = (0, express_1.default)();
 const httpServer = (0, http_1.createServer)(app);
+// Allowed origins for CORS
+const allowedOrigins = [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL || '',
+].filter((origin) => Boolean(origin));
 // Socket.IO setup
 const io = new socket_io_1.Server(httpServer, {
     cors: {
-        origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+        origin: allowedOrigins,
         methods: ['GET', 'POST'],
         credentials: true,
     },
@@ -40,7 +45,17 @@ app.set('io', io);
 // Middleware
 app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)({
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin)
+            return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        }
+        else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 app.use((0, morgan_1.default)('dev'));
